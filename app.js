@@ -65,6 +65,48 @@ app.get('/github-profile', async(req, res) => {
     res.json(githubRes)
 })
 
+app.get('/github-repos', async(req, res) => {
+    // The query to get the profile information
+    const query = gql`
+        {
+            viewer {
+                name
+                
+                repositories(first: 50, isFork: false) {
+                    nodes {
+                        name
+                        owner {
+                            login
+                        }
+                        ... on Repository {
+                            name
+                            isPrivate
+                        }
+                        object(expression: "master:") {
+                            ... on Tree {
+                                entries {
+                                    name
+                                    object {
+                                        ... on Blob {
+                                            byteSize
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    totalCount
+                }
+            }
+        }
+    `;
+
+    // Make GraphQL call
+    const githubRes = await graphQLClient.request(query);
+    // respond with the results
+    res.json(githubRes)
+})
+
 const server = app.listen(defaultPort, () => {
     const port = server.address().port;
 
