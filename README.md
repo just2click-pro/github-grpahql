@@ -19,7 +19,8 @@ npm install
 
 ## Usage
 
-```node app.js
+```bash
+node app.js
 ```
 
 ## License
